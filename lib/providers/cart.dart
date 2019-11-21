@@ -1,5 +1,10 @@
 import 'package:flutter/foundation.dart';
+import 'package:json_annotation/json_annotation.dart';
+import 'package:shop/services/services_helper.dart';
 
+part 'cart.g.dart';
+
+@JsonSerializable()
 class CartItem {
   String id;
   String productId;
@@ -14,9 +19,15 @@ class CartItem {
     @required this.price,
     @required this.quantity,
   });
+
+  factory CartItem.fromJson(Map<String, dynamic> json) =>
+      _$CartItemFromJson(json);
+
+  Map<String, dynamic> toJson() => _$CartItemToJson(this);
 }
 
 class Cart with ChangeNotifier {
+  final servicesHelper = ServicesHelper();
   Map<String, CartItem> _items = {};
 
   Map<String, CartItem> get items {
@@ -39,28 +50,31 @@ class Cart with ChangeNotifier {
     return _items[productId];
   }
 
-  addItem(productId, name, price) {
+  addItem(productId, name, price) async {
     if (_items.containsKey(productId)) {
+      await servicesHelper.addProductToCartItem(productId, newCart);
       _items.update(
         productId,
         (cartItem) => CartItem(
           productId: cartItem.productId,
-          id: cartItem.id,
+          id: productId,
           name: cartItem.name,
           price: cartItem.price,
           quantity: ++cartItem.quantity,
         ),
       );
     } else {
+      final newCart = CartItem(
+        productId: productId,
+        id: productId,
+        name: name,
+        price: price,
+        quantity: 1,
+      );
+      await servicesHelper.addItemToCart(productId, newCart);
       _items.putIfAbsent(
         productId,
-        () => CartItem(
-          productId: productId,
-          id: DateTime.now().toString(),
-          name: name,
-          price: price,
-          quantity: 1,
-        ),
+        () => newCart,
       );
     }
     notifyListeners();

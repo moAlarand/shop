@@ -1,5 +1,6 @@
 import 'package:dio/dio.dart';
 import 'package:retrofit/http.dart';
+import 'package:shop/providers/cart.dart';
 import 'package:shop/providers/key.dart';
 import 'package:shop/providers/product.dart';
 part 'services_helper.g.dart';
@@ -23,9 +24,19 @@ abstract class ServicesHelper {
   @DELETE("/products/{key}.json")
   Future<void> removeProduct(@Path() String key);
 
-  @PATCH("/products/{key}/isFav.json")
-  Future<Key> addToFav(@Path() String key, {@Body() bool isFav = true});
+  @PATCH("/products/{key}.json")
+  Future<void> toggleFav(@Path() String key, @Body() Product product);
 
-  @PATCH("/products/{key}/isFav.json")
-  Future<Key> unFav(@Path() String key, {@Body() bool isFav = false});
+  @POST("/cart/{key}.json")
+  Future<Key> addItemToCart(@Path() String key, @Body() CartItem cartItem);
+
+  @GET("/cart.json")
+  Future<Map<String, CartItem>> getCart();
+
+  @DELETE("/cart/{key}.json")
+  Future<void> deleteCart(@Path() String key);
+
+  @PATCH("/cart/{key}.json")
+  Future<void> addProductToCartItem(
+      @Path() String key, @Body() Product product);
 }

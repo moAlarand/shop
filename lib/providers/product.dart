@@ -32,11 +32,9 @@ class Product with ChangeNotifier {
     isFav = !isFav;
     notifyListeners();
     try {
-      if (isFav)
-        await servicesHelper.addToFav(id);
-      else
-        await servicesHelper.unFav(id);
+      await servicesHelper.toggleFav(id, this);
     } catch (error) {
+      print(error);
       isFav = !isFav;
       notifyListeners();
       throw error;

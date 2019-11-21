@@ -37,9 +37,13 @@ class ProductListItem extends StatelessWidget {
               ),
               onPressed: () async {
                 try {
-                  await product.toggleFav;
+                  await product.toggleFav();
                 } catch (error) {
-                  
+                  print(error.response);
+                  Scaffold.of(context).showSnackBar(SnackBar(
+                    content: Text("added item to fav faild!! + ${error.response}"),
+                    duration: Duration(seconds: 2),
+                  ));
                 }
               },
             ),
